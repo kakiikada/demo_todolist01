@@ -1,28 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400&family=Klee+One&display=swap');
 :root {
   --bg-color: #fff;
-  --base-color: #444;
-  --main-color: #448;
-  --accent-color: #484;
+  --base-color: #f9f7f0;
+  --text-color: #58554b;
+  --border-color: #a5aea9;
+  /* --border-color: #b8b8b8; */
+  --main-color: #9fc3b2;
+  --accent-color: #8898c8;
+  --danger-color: #cda2a2;
+
+  --shadow: 0.125rem 0.125rem 0.25rem #58554b33;
+
+  /* Font */
+  --font-family-main: "Klee One", cursive;
+  --font-family-title: "Caveat", cursive;
+  font-size: 1rem;
+
+  /* --media-sp: 767px;
+  --media-tab: 959px;*/
 }
-.content {}
-.textBox {
-  /* background-color: #ffa; */
-  input {
-    width: 100%;
-    padding: 0.25rem;
-    text-align: justify;
-  }
+html body {
+  background-color: var( --base-color);
+  font-family: var(--font-family-main);
+}
+*:focus-visible {
+  border: 2px solid var(--accent-color);
+  outline: none;
+}
+.content {
+  padding: 0.5rem;
+}
+input {
+  width: 100%;
+  padding: 0.25rem;
+  border: 2px solid var(--bg-color);
+  text-align: justify;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  box-shadow: var(--shadow);
 }
 .btn {
-  border: 1px solid var(--main-color);
-  border-radius: 0.125rem;
+  display: inline-block;
+  transition: .25s;
   padding: 0.25rem;
   line-height: 1rem;
+  color: var(--bg-color);
+  background-color: var(--main-color);
+  border: 1px solid var(--main-color);
+  border-radius: 0.125rem;
+  @media screen and (min-width: 767px) {
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+}
+
+.btn--trash, .btn--trashText {
+  background-color: var(--danger-color);
+  border: 1px solid var(--danger-color);
+}
+.btn--trash, .btn--edit {
+  height: 1.625rem;
+  width: 1.625rem;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: auto 60%;
+}
+.btn--edit {
+  border-radius: 50%;
+  background-color: var(--accent-color);
+  background-image: url(../assets/icon_edit.svg);
+}
+.btn--trash {
+  background-image: url(../assets/icon_trash.svg);
+}
+.btn--trashText {
+  height: 1.625rem;
+  width: auto;
+  padding-right: 1.375rem;
+  background-image: url(../assets/icon_trash.svg);
+  background-repeat: no-repeat;
+  background-position: center right 0.25rem;
+  background-size: auto 60%;
 }
 
 body {
   background-color: var(--bg-color);
-  color: var(--base-color);
+  color: var(--text-color);
+}
+h1, h2, h3, h4, h5, h6, p {
+  color: currentColor;
+  /* margin: 0; */
+
 }
 .checkbox {
   position: relative;
@@ -49,41 +118,79 @@ body {
 /* --------------------------------- */
 
 .title {
+  font-family: var(--font-family-title);
   font-size: 2.5rem;
+  color: var(--main-color);
+  text-align: center;
 }
 .addBox {
   display: flex;
+  max-width: 500px;
+  margin: 1rem auto 0 auto;
   align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
   .addBox-textBox {
     width: calc(100% - 3.5rem);
+      flex-grow: 1;
+      flex-shrink: 1;
   }
   .addBox-btn {
-    width: 3.5rem;
+    flex-grow: 0;
+    flex-shrink: 0;
   }
 }
+.todoListHead {
+  margin: 0.5rem auto 0;
+  max-width: 800px;
+  text-align: right;
+}
 .todoList {
-  margin-top: 1rem;
-  padding: 0.5rem;
-  border: 1px solid ;
+  overflow: hidden;
+  max-width: 800px;
+  margin: 0 auto;
+  border: 1px solid var(--border-color);
   border-radius: 0.5rem;
+  background-color: var(--bg-color);
+  box-shadow: var(--shadow);
+  @media screen and (min-width: 767px) {
+  }
+  & + & {
+    margin-top: 1rem;
+  }
+  .todoList-header {
+    position: relative;
+    padding: 0.5rem;
+    color: var(--bg-color);
+    background-color: var(--main-color);
+    border-bottom: solid 1px var(--border-color);
+    .todoList-header_title {
+      text-align: center;
+      padding: 0 2.5rem;
+    }
+    .todoList-header_num {
+      position: absolute;
+      font-size: 0.875rem;
+      right: 0.25rem;
+      bottom: 0.25rem;
+    }
+  }
   .todoList-list {
+    padding: 0 0.5rem;
     .todoList-list_line {
-      padding: 0.5rem;
-      border-bottom: 1px solid;
-      &:last-of-type {
-        border: none;
-      }
+      padding: 0.5rem 0;
+      border-bottom: 2px dotted var(--border-color);
     }
   }
   .todoList-box {
     display: flex;
     align-items: center;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     justify-content: space-between;
     gap: 0.5rem;
     .todoList-box_fin {
-      width: 3.5rem;
       flex-grow: 0;
+      font-size: 0.75rem;
       flex-shrink: 0;
     }
     .todoList-box_text {
@@ -91,10 +198,53 @@ body {
       flex-shrink: 1;
       text-align: justify;
     }
-    .todoList-box_delete {
-      width: 3.5rem;
+    .todoList-box_edit {
+      gap: 0.5rem;
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      font-size: 0.75rem;
+      @media screen and (min-width: 767px) {
+        flex-grow: 0;
+        flex-shrink: 0;
+        width: auto;
+      }
+      button {
+        display: inline-block;
+      }
+    }
+  }
+  .todoList-editBox {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+    .todoList-editBox_text {
+      flex-grow: 1;
+      flex-shrink: 1;
+      input {
+        width: 100%;
+        text-align: justify;
+      }
+    }
+    .todoList-editBox_btn {
+      font-size: 0.75rem;
       flex-grow: 0;
       flex-shrink: 0;
     }
   }
+  .todoList-footer {
+    display: flex;
+    font-size: 0.75rem;
+    padding: 0.5rem;
+    justify-content: flex-end;
+  }
+}
+
+
+/* TypeScript */
+.ts-deleting {
+  transition: 0.3s;
+  opacity: 0;
 }
