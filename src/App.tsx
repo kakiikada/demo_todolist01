@@ -8,8 +8,66 @@ function App() {
   const [editIndex, setEditIndex] = useState<number | null>(null)
   const [editText, setEditText] = useState('')
   // ボタンアニメーション
+  // 進行中
   const [deletingTodo, setDeletingTodo] = useState<string | null>(null)
+  const [deletingCompletedTodo, setDeletingCompletedTodo] = useState<string | null>(null)
+  const deleteTodoAnimation = (data: string, type: 'todo' | 'completed', move: 'move' | 'delet') => {
+  let setDeletingData: React.Dispatch<React.SetStateAction<string | null>>
+  let datas: string[]
+  let setData: React.Dispatch<React.SetStateAction<string[]>>
+  let localStorageName: string
+
+  let setDeletingData_2: React.Dispatch<React.SetStateAction<string | null>>
+  let datas_2: string[]
+  let setData_2: React.Dispatch<React.SetStateAction<string[]>>
+  let localStorageName_2: string
+    if(type == 'todo'){
+      setDeletingData = setDeletingTodo
+      datas = todos
+      setData = setTodos
+      localStorageName = 'todos'
+
+      setDeletingData_2 = setDeletingCompletedTodo
+      datas_2 = completedTodos
+      setData_2 = setCompletedTodos
+      localStorageName_2 = 'completedTodos'
+    }else if(type == 'completed'){
+      setDeletingData = setDeletingCompletedTodo
+      datas = completedTodos
+      setData = setCompletedTodos
+      localStorageName = 'completedTodos'
+
+      setDeletingData_2 = setDeletingTodo
+      datas_2 = todos
+      setData_2 = setTodos
+      localStorageName_2 = 'todos'
+    }else{
+      return
+    }
+    if(move == 'delet'){
+      setDeletingData(data)
+      setTimeout(() => {
+        const saveData = datas.filter((item) => item !== data)
+        setData(saveData)
+        localStorage.setItem(localStorageName, JSON.stringify(saveData))
+        setDeletingData(null)
+      }, 300)
+    }else if(move == 'move'){
+      setDeletingData(data)
+      setTimeout(() => {
+        const saveData = datas.filter((item) => item !== data)
+        setData(saveData)
+        localStorage.setItem(localStorageName, JSON.stringify(saveData))
   
+        const saveData_2 = [data,...datas_2]
+        setData_2(saveData_2)
+        localStorage.setItem(localStorageName_2, JSON.stringify(saveData_2))
+        setDeletingData(null)
+      }, 300)
+    }else{
+      return
+    }
+  }
 
   useEffect(() => {
     // 進行中
@@ -42,6 +100,13 @@ function App() {
           onSubmit={(e) => {
             e.preventDefault()
             if (!text.trim()) return
+
+            // 現在は日時指定がないため、同じ内容のタスクを区別できないよう重複登録を禁止しています。日時設定を追加した場合はID指定化＋このコードを削除
+            if (todos.includes(text) || completedTodos.includes(text)) {
+              alert('全く同じテキストは登録できません。')
+              return
+            }
+
             setTodos([...todos, text])
             const saveTodos = [...todos, text]
             setTodos(saveTodos)
@@ -70,7 +135,7 @@ function App() {
             <p className="todoList-header_num">{todos.length}件</p>
           </div>
           {todos.length === 0 && (
-          <div>今はありません</div>
+          <div className="todoList-notfound">今はありません</div>
           )}
           <ul className="todoList-list">
             {todos.map((todo, index) => (
@@ -80,16 +145,7 @@ function App() {
               <div className="todoList-box">
                 <div className="todoList-box_fin">
                   <button type="button" className="btn"
-                    onClick={() => {
-                      const saveTodos = todos.filter((_, i) => i !== index)
-                      setTodos(saveTodos)
-                      localStorage.setItem('todos', JSON.stringify(saveTodos))
-
-                      setCompletedTodos([todo,...completedTodos])
-                      const saveCompletedTodos = [todo,...completedTodos]
-                      setCompletedTodos(saveCompletedTodos)
-                      localStorage.setItem('completedTodos', JSON.stringify(saveCompletedTodos))
-                    }}
+                    onClick={() => deleteTodoAnimation(todo, 'todo', 'move')}
                   >完了</button>
                 </div>
                 <div className="todoList-box_text">{todo}</div>
@@ -100,16 +156,10 @@ function App() {
                       setEditText(todo)
                     }}
                   ></button>
+                  {/* 削除 */}
                   <button className="btn btn--trash"
                   type="button"
-                  onClick={() => {
-                    setDeletingTodo(todo)
-                    setTimeout(() => {
-                      const saveTodos = todos.filter((_, i) => i !== index)
-                      setTodos(saveTodos)
-                      localStorage.setItem('todos', JSON.stringify(saveTodos))
-                    }, 300)
-                  }}
+                  onClick={() => deleteTodoAnimation(todo, 'todo', 'delet')}
                   ></button>
                 </div>
               </div>
@@ -126,12 +176,24 @@ function App() {
                             setEditIndex(null)
                             return
                           }
+                          // 現在は日時指定がないため、同じ内容のタスクを区別できないよう重複登録を禁止しています。
+                          // 日時設定を追加した場合はID指定化＋このコードを削除
+                          const newText = editText.trim()
+                          if (
+                            todos.some((todo, i) => todo === newText && i !== editIndex) ||
+                            completedTodos.includes(newText)
+                          ) {
+                            alert('全く同じテキストに変更できません。')
+                            return
+                          }
+
                           const saveTodos = todos.map((todo, i) => {
-                            if(i === editIndex){
-                              return editText
+                            if (i === editIndex) {
+                              return newText
                             }
                             return todo
                           })
+
                           setTodos(saveTodos)
                           localStorage.setItem('todos', JSON.stringify(saveTodos))
                           setEditIndex(null)
@@ -161,35 +223,22 @@ function App() {
             <h2 className="todoList-header_title">完了したタスク</h2>
             <p className="todoList-header_num">{completedTodos.length}件</p>
           </div>
-
-
           {completedTodos.length === 0 && (
-            <div>今はありません</div>
+            <div className="todoList-notfound">今はありません</div>
           )}
           <ul className="todoList-list">
             {completedTodos.map((todo, index) => (
-            <li className="todoList-list_line" key={index}>
+            <li className={`todoList-list_line ${deletingCompletedTodo === todo ? 'ts-deleting' : ''}`} key={index}>
               <div className="todoList-box">
                 <div className="todoList-box_text">{todo}</div>
                 <div className="todoList-box_edit">
                   <button className="btn" type="button"
-                    onClick={() => {
-                      const savecompletedTodos = completedTodos.filter((_, i) => i !== index)
-                      setCompletedTodos(savecompletedTodos)
-                      localStorage.setItem('completedTodos', JSON.stringify(savecompletedTodos))
-
-                      setTodos([todo,...todos])
-                      const savetodos = [todo,...todos]
-                      setTodos(savetodos)
-                      localStorage.setItem('todos', JSON.stringify(savetodos))
-                    }}
+                    onClick={() => deleteTodoAnimation(todo, 'completed', 'move')}
                   >進行中に戻す</button>
-                  <button className="btn btn--trash" type="button"
-                    onClick={() => {
-                      const saveCompletedTodos = completedTodos.filter((_, i) => i !== index)
-                      setCompletedTodos(saveCompletedTodos)
-                      localStorage.setItem('completedTodos', JSON.stringify(saveCompletedTodos))
-                    }}
+                  {/* 削除 */}
+                  <button className="btn btn--trash"
+                  type="button"
+                    onClick={() => {deleteTodoAnimation(todo, 'completed', 'delet')}}
                   ></button>
                 </div>
               </div>
