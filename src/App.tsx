@@ -15,6 +15,7 @@ function App() {
   const [editId, setEditId] = useState<string | null>(null)
   const [editText, setEditText] = useState('')
   const [editDeadline, setEditDeadline] = useState('')
+  const [sortOrder, setSortOrder] = useState<'none' | 'deadline'>('none')
   
   // ボタンアニメーション
   // 進行中
@@ -94,7 +95,6 @@ function App() {
       setCompletedTodos(parsedCompletedTodos)
     }
     
-    
   }, [])
   // 編集後に保存する関数
   const saveEdit = () => {
@@ -121,6 +121,16 @@ function App() {
     localStorage.setItem('todos', JSON.stringify(saveTodos))
     setEditId(null)
   }
+
+  // ソート
+  const sortedTodos = [...todos].sort((a, b) => {
+    if (sortOrder === 'none') return 0
+    // 期限がない場合を後ろに移動させる
+    if (a.deadline === null) return 1
+    if (b.deadline === null) return -1
+
+    return a.deadline.localeCompare(b.deadline)
+  })
 
   return (
     <main>
@@ -176,11 +186,27 @@ function App() {
             <h2 className="todoList-header_title">進行中のタスク</h2>
             <p className="todoList-header_num">{todos.length}件</p>
           </div>
+          <div className="todoList-sortBox">
+            並び替え：
+            <button className= {sortOrder === 'none' ? 'btn ts-active' : 'btn'}
+              type="button"
+              onClick={() => setSortOrder('none')}
+            >
+              登録順
+            </button>
+
+            <button className= {sortOrder === 'deadline' ? 'btn ts-active' : 'btn'}
+              type="button"
+              onClick={() => setSortOrder('deadline')}
+            >
+              期限順
+            </button>
+          </div>
           {todos.length === 0 && (
           <div className="todoList-notfound">今はありません</div>
           )}
           <ul className="todoList-list">
-            {todos.map((todo) => (
+            {sortedTodos.map((todo) => (
               
             <li className={`todoList-list_line ${deletingTodo === todo.id ? 'ts-deleting' : ''}`} key={todo.id}>
             {editId !== todo.id ? (
@@ -305,6 +331,18 @@ function App() {
               }}
             >全削除</button>
           </div>
+        </div>
+        {/* 機能一覧 */}
+        <div className="function">
+          <h2 className="function-title">機能一覧</h2>
+          <ul>
+            <li>タスクの入力（タスク名・期限）</li>
+            <li>登録タスクの「進行中・完了」間の移動・編集・削除</li>
+            <li>全削除時のアラート</li>
+            <li>タスク数の表示</li>
+            <li>期限が当日であるタスク・期限が切れているタスクそれぞれの期限日の表示色を変更</li>
+            <li>進行中タスクのソート</li>
+          </ul>
         </div>
       </section>
     </main>

@@ -43,7 +43,7 @@ input {
 .btn {
   display: inline-block;
   transition: .25s;
-  padding: 0.25rem;
+  padding: 0.25rem 0.25rem 0.325rem;
   line-height: 1rem;
   color: var(--bg-color);
   background-color: var(--main-color);
@@ -180,6 +180,17 @@ h1, h2, h3, h4, h5, h6, p {
       bottom: 0.25rem;
     }
   }
+  .todoList-sortBox {
+    padding: 0.5rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    .btn:not(.ts-active) {
+      background-color: --var(--bg-color);
+      color: var(--text-color);
+      border: --var(--bg-color);
+    }
+  }
   .todoList-list {
     padding: 0 0.5rem;
     .todoList-list_line {
@@ -267,6 +278,26 @@ h1, h2, h3, h4, h5, h6, p {
     font-size: 0.75rem;
     padding: 0.5rem;
     justify-content: flex-end;
+  }
+}
+.function {
+  margin: 5rem auto 0;
+  padding: 1rem;
+  max-width: 800px;
+  background-color: var(--bg-color);
+  box-shadow: var(--shadow);
+  .function-title {
+    font-size: 1.25rem;
+  }
+  ul {
+    margin-top: 1rem;
+    list-style:disc;
+    padding-left: 1.5rem;
+    li {
+      & + & {
+        margin-top: 0.5rem;
+      }
+    }
   }
 }
 
