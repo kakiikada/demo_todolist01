@@ -177,7 +177,7 @@ function App() {
                 />
               </li>
               <li className="addBox-textBox_input">
-                <p className="addBox-textBox_input_title">：</p>
+                <p className="addBox-textBox_input_title">期限：</p>
                 <input
                   type="date"
                   value={editDeadline}
