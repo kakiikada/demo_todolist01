@@ -70,6 +70,7 @@ input {
 .btn--edit {
   border-radius: 50%;
   background-color: var(--accent-color);
+  border-color: var(--accent-color);
   background-image: url(../assets/icon_edit.svg);
 }
 .btn--trash {

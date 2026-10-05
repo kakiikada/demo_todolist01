@@ -190,7 +190,7 @@ function App() {
             </div>
           </div>
         </form>
-        <p className="todoListHead">未完了{todos.length}件 / {todos.length + completedTodos.length}全件</p>
+        <p className="todoListHead">未完了{todos.length}件 / 全{todos.length + completedTodos.length}件</p>
         <div className="todoList">
           <div className="todoList-header">
             <h2 className="todoList-header_title">進行中のタスク</h2>
