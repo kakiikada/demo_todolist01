@@ -8,8 +8,9 @@
   --main-color: #9fc3b2;
   --accent-color: #8898c8;
   --danger-color: #cda2a2;
+  --yellow-color: #cdc4a2;
 
-  --shadow: 0.125rem 0.125rem 0.25rem #58554b33;
+  --shadow: 0.125rem 0.125rem 0.5rem #58554b33;
 
   /* Font */
   --font-family-main: "Klee One", cursive;
@@ -131,9 +132,13 @@ h1, h2, h3, h4, h5, h6, p {
   justify-content: space-between;
   gap: 0.5rem;
   .addBox-textBox {
-    width: calc(100% - 3.5rem);
-      flex-grow: 1;
-      flex-shrink: 1;
+    flex-grow: 1;
+    flex-shrink: 1;
+    .addBox-textBox_input {
+      & + & {
+        margin-top: 0.25rem;
+      }
+    }
   }
   .addBox-btn {
     flex-grow: 0;
@@ -202,12 +207,28 @@ h1, h2, h3, h4, h5, h6, p {
       gap: 0.5rem;
       width: 100%;
       display: flex;
+      align-items: center;
       justify-content: flex-end;
       font-size: 0.75rem;
       @media screen and (min-width: 767px) {
         flex-grow: 0;
         flex-shrink: 0;
         width: auto;
+      }
+      .todoList-box_edit_date {
+        span{
+          font-weight: bold;
+          padding: 0.125rem 0.5rem 0.25rem;
+          border-radius: 0.25rem;
+          &.todoList-box_edit_date--red {
+            color: var(--base-color);
+            background-color: var(--danger-color);
+          }
+          &.todoList-box_edit_date--yellow {
+            color: var(--base-color);
+            background-color: var(--yellow-color);
+          }
+        }
       }
       button {
         display: inline-block;
@@ -226,6 +247,9 @@ h1, h2, h3, h4, h5, h6, p {
       input {
         width: 100%;
         text-align: justify;
+        & + & {
+          margin-top: 0.25rem;
+        }
       }
     }
     .todoList-editBox_btn {

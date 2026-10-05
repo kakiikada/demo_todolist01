@@ -1,25 +1,32 @@
 import { useEffect,useState } from 'react'
 import './styles/App.css'
 
+type Todo = {
+  id: string
+  text: string
+  deadline: string | null
+}
+
 function App() {
+  const today = new Date().toISOString().split('T')[0]
   const [text, setText] = useState('')
-  const [todos, setTodos] = useState<string[]>([])
-  const [completedTodos, setCompletedTodos] = useState<string[]>([])
-  const [editIndex, setEditIndex] = useState<number | null>(null)
+  const [todos, setTodos] = useState<Todo[]>([])
+  const [completedTodos, setCompletedTodos] = useState<Todo[]>([])
+  const [editId, setEditId] = useState<string | null>(null)
   const [editText, setEditText] = useState('')
+  const [editDeadline, setEditDeadline] = useState('')
+  
   // ボタンアニメーション
   // 進行中
   const [deletingTodo, setDeletingTodo] = useState<string | null>(null)
   const [deletingCompletedTodo, setDeletingCompletedTodo] = useState<string | null>(null)
-  const deleteTodoAnimation = (data: string, type: 'todo' | 'completed', move: 'move' | 'delet') => {
+  const deleteTodoAnimation = (data: Todo, type: 'todo' | 'completed', move: 'move' | 'delet') => {
   let setDeletingData: React.Dispatch<React.SetStateAction<string | null>>
-  let datas: string[]
-  let setData: React.Dispatch<React.SetStateAction<string[]>>
+  let datas: Todo[]
+  let setData: React.Dispatch<React.SetStateAction<Todo[]>>
   let localStorageName: string
-
-  let setDeletingData_2: React.Dispatch<React.SetStateAction<string | null>>
-  let datas_2: string[]
-  let setData_2: React.Dispatch<React.SetStateAction<string[]>>
+  let datas_2: Todo[]
+  let setData_2: React.Dispatch<React.SetStateAction<Todo[]>>
   let localStorageName_2: string
     if(type == 'todo'){
       setDeletingData = setDeletingTodo
@@ -27,7 +34,6 @@ function App() {
       setData = setTodos
       localStorageName = 'todos'
 
-      setDeletingData_2 = setDeletingCompletedTodo
       datas_2 = completedTodos
       setData_2 = setCompletedTodos
       localStorageName_2 = 'completedTodos'
@@ -37,7 +43,6 @@ function App() {
       setData = setCompletedTodos
       localStorageName = 'completedTodos'
 
-      setDeletingData_2 = setDeletingTodo
       datas_2 = todos
       setData_2 = setTodos
       localStorageName_2 = 'todos'
@@ -45,17 +50,17 @@ function App() {
       return
     }
     if(move == 'delet'){
-      setDeletingData(data)
+      setDeletingData(data.id)
       setTimeout(() => {
-        const saveData = datas.filter((item) => item !== data)
+        const saveData = datas.filter((item) => item.id !== data.id)
         setData(saveData)
         localStorage.setItem(localStorageName, JSON.stringify(saveData))
         setDeletingData(null)
       }, 300)
     }else if(move == 'move'){
-      setDeletingData(data)
+      setDeletingData(data.id)
       setTimeout(() => {
-        const saveData = datas.filter((item) => item !== data)
+        const saveData = datas.filter((item) => item.id !== data.id)
         setData(saveData)
         localStorage.setItem(localStorageName, JSON.stringify(saveData))
   
@@ -91,6 +96,31 @@ function App() {
     
     
   }, [])
+  // 編集後に保存する関数
+  const saveEdit = () => {
+    if (!editText.trim()) {
+      setEditId(null)
+      return
+    }
+
+    const newText = editText.trim()
+    const newDate = editDeadline.trim()
+
+    const saveTodos = todos.map((todo) => {
+      if (todo.id === editId) {
+        return {
+          ...todo,
+          text: newText,
+          deadline: newDate || null
+        }
+      }
+      return todo
+    })
+
+    setTodos(saveTodos)
+    localStorage.setItem('todos', JSON.stringify(saveTodos))
+    setEditId(null)
+  }
 
   return (
     <main>
@@ -100,29 +130,41 @@ function App() {
           onSubmit={(e) => {
             e.preventDefault()
             if (!text.trim()) return
-
-            // 現在は日時指定がないため、同じ内容のタスクを区別できないよう重複登録を禁止しています。日時設定を追加した場合はID指定化＋このコードを削除
-            if (todos.includes(text) || completedTodos.includes(text)) {
-              alert('全く同じテキストは登録できません。')
-              return
+            const newTodo: Todo = {
+              id: crypto.randomUUID(),
+              text: text.trim(),
+              deadline: editDeadline || null
             }
 
-            setTodos([...todos, text])
-            const saveTodos = [...todos, text]
+            const saveTodos = [...todos, newTodo]
+
             setTodos(saveTodos)
             localStorage.setItem('todos', JSON.stringify(saveTodos))
             setText('')
+            setEditDeadline('')
           }}
         >
           <div className="addBox">
-            <div className="addBox-textBox">
-              <div className="textBox">
-                <input type="text"
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                />
-              </div>
-            </div>
+            <ul className="addBox-textBox">
+              <li className="addBox-textBox_input">
+                <div className="textBox">
+                  <input type="text"
+                    value={text}
+                    placeholder='タスクを記入してください'
+                    onChange={(e) => setText(e.target.value)}
+                  />
+                </div>
+              </li>
+              <li className="addBox-textBox_input">
+                <div className="textBox">
+                  <input
+                    type="date"
+                    value={editDeadline}
+                    onChange={(e) => setEditDeadline(e.target.value)}
+                  />
+                </div>
+              </li>
+            </ul>
             <div className="addBox-btn">
               <button className="btn" type="submit">追加</button>
             </div>
@@ -138,22 +180,37 @@ function App() {
           <div className="todoList-notfound">今はありません</div>
           )}
           <ul className="todoList-list">
-            {todos.map((todo, index) => (
+            {todos.map((todo) => (
               
-            <li className={`todoList-list_line ${deletingTodo === todo ? 'ts-deleting' : ''}`} key={index}>
-            {editIndex !== index ? (
+            <li className={`todoList-list_line ${deletingTodo === todo.id ? 'ts-deleting' : ''}`} key={todo.id}>
+            {editId !== todo.id ? (
               <div className="todoList-box">
                 <div className="todoList-box_fin">
                   <button type="button" className="btn"
                     onClick={() => deleteTodoAnimation(todo, 'todo', 'move')}
                   >完了</button>
                 </div>
-                <div className="todoList-box_text">{todo}</div>
+                <p className="todoList-box_text">{todo.text}</p>
                 <div className="todoList-box_edit">
+                  {/* 日付け */}
+                  <div className="todoList-box_edit_date">
+                    <span className={
+                      todo.deadline === null
+                        ? ''
+                        : todo.deadline < today
+                          ? 'todoList-box_edit_date--red'
+                          : todo.deadline === today
+                            ? 'todoList-box_edit_date--yellow'
+                            : ''
+                      }>期限：{todo.deadline === null ? '無し' : todo.deadline.replace(/-/g, '/')}
+                    </span>
+                  </div>
+                  {/* 編集 */}
                   <button className="btn btn--edit" type="button"
                     onClick={() => {
-                      setEditIndex(index)
-                      setEditText(todo)
+                      setEditId(todo.id)
+                      setEditText(todo.text)
+                      setEditDeadline(todo.deadline ?? '')
                     }}
                   ></button>
                   {/* 削除 */}
@@ -164,42 +221,30 @@ function App() {
                 </div>
               </div>
             ):(
-              <form action="">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  saveEdit()
+                }}
+              >
                 <div className="todoList-editBox">
                   <div className="todoList-editBox_text">
-                  <input type="text" value={editText} onChange={(e) => setEditText(e.target.value)} />
+                    <input
+                      type="text"
+                      value={editText}
+                      onChange={(e) => setEditText(e.target.value)}
+                    />
+                    <input
+                      type="date"
+                      value={editDeadline}
+                      onChange={(e) => setEditDeadline(e.target.value)}
+                    />
                   </div>
-                    <div className="todoList-editBox_btn">
-                      <button type="button" className="btn"
-                        onClick={() => {
-                          if (!editText.trim()) {
-                            setEditIndex(null)
-                            return
-                          }
-                          // 現在は日時指定がないため、同じ内容のタスクを区別できないよう重複登録を禁止しています。
-                          // 日時設定を追加した場合はID指定化＋このコードを削除
-                          const newText = editText.trim()
-                          if (
-                            todos.some((todo, i) => todo === newText && i !== editIndex) ||
-                            completedTodos.includes(newText)
-                          ) {
-                            alert('全く同じテキストに変更できません。')
-                            return
-                          }
-
-                          const saveTodos = todos.map((todo, i) => {
-                            if (i === editIndex) {
-                              return newText
-                            }
-                            return todo
-                          })
-
-                          setTodos(saveTodos)
-                          localStorage.setItem('todos', JSON.stringify(saveTodos))
-                          setEditIndex(null)
-                        }}
-                      >保存</button>
-                    </div>
+                  <div className="todoList-editBox_btn">
+                    <button type="submit" className="btn">
+                      保存
+                    </button>
+                  </div>
                 </div>
               </form>
             )
@@ -224,14 +269,19 @@ function App() {
             <p className="todoList-header_num">{completedTodos.length}件</p>
           </div>
           {completedTodos.length === 0 && (
-            <div className="todoList-notfound">今はありません</div>
+            <p className="todoList-notfound">今はありません</p>
           )}
           <ul className="todoList-list">
-            {completedTodos.map((todo, index) => (
-            <li className={`todoList-list_line ${deletingCompletedTodo === todo ? 'ts-deleting' : ''}`} key={index}>
+            {completedTodos.map((todo) => (
+            <li className={`todoList-list_line ${deletingCompletedTodo === todo.id ? 'ts-deleting' : ''}`} key={todo.id}>
               <div className="todoList-box">
-                <div className="todoList-box_text">{todo}</div>
+                <p className="todoList-box_text">{todo.text}</p>
                 <div className="todoList-box_edit">
+                  {/* 日付け */}
+                  <p className="todoList-box_edit_date">期限：<span>
+                    {todo.deadline === null ? '無し' : todo.deadline.replace(/-/g, '/')}
+                    </span></p>
+                  {/* 編集 */}
                   <button className="btn" type="button"
                     onClick={() => deleteTodoAnimation(todo, 'completed', 'move')}
                   >進行中に戻す</button>
