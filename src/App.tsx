@@ -8,7 +8,9 @@ type Todo = {
 }
 
 function App() {
-  const today = new Date().toISOString().split('T')[0]
+  // 今日の日付取得と日本時間に修正
+  const now = new Date()
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
   const [text, setText] = useState('')
   const [todos, setTodos] = useState<Todo[]>([])
   const [completedTodos, setCompletedTodos] = useState<Todo[]>([])
