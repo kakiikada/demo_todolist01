@@ -135,8 +135,13 @@ h1, h2, h3, h4, h5, h6, p {
     flex-grow: 1;
     flex-shrink: 1;
     .addBox-textBox_input {
+      display: flex;
+      align-items: center;
       & + & {
         margin-top: 0.25rem;
+      }
+      .addBox-textBox_input_title {
+        width: 5rem;
       }
     }
   }
@@ -146,7 +151,7 @@ h1, h2, h3, h4, h5, h6, p {
   }
 }
 .todoListHead {
-  margin: 0.5rem auto 0;
+  margin: 0.5rem auto 0.125rem;
   max-width: 800px;
   text-align: right;
 }
@@ -188,7 +193,7 @@ h1, h2, h3, h4, h5, h6, p {
     .btn:not(.ts-active) {
       background-color: --var(--bg-color);
       color: var(--text-color);
-      border: --var(--bg-color);
+      border: 1px solid var(--bg-color);
     }
   }
   .todoList-list {
@@ -255,11 +260,22 @@ h1, h2, h3, h4, h5, h6, p {
     .todoList-editBox_text {
       flex-grow: 1;
       flex-shrink: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      @media screen and (min-width: 767px) {
+        flex-wrap: nowrap;
+      }
+      .todoList-editBox_text_title {
+        padding: 0.5rem 0;
+        min-width: 4rem;
+      }
       input {
         width: 100%;
         text-align: justify;
-        & + & {
-          margin-top: 0.25rem;
+        width: calc(100% - 4.5rem);
+        @media screen and (min-width: 767px) {
+          width: calc(50% - 4.75rem);
         }
       }
     }

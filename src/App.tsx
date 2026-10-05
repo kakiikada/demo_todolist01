@@ -157,22 +157,19 @@ function App() {
           <div className="addBox">
             <ul className="addBox-textBox">
               <li className="addBox-textBox_input">
-                <div className="textBox">
-                  <input type="text"
-                    value={text}
-                    placeholder='タスクを記入してください'
-                    onChange={(e) => setText(e.target.value)}
-                  />
-                </div>
+                <p className="addBox-textBox_input_title">タスク:</p>
+                <input type="text"
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                />
               </li>
               <li className="addBox-textBox_input">
-                <div className="textBox">
-                  <input
-                    type="date"
-                    value={editDeadline}
-                    onChange={(e) => setEditDeadline(e.target.value)}
-                  />
-                </div>
+                <p className="addBox-textBox_input_title">期限:</p>
+                <input
+                  type="date"
+                  value={editDeadline}
+                  onChange={(e) => setEditDeadline(e.target.value)}
+                />
               </li>
             </ul>
             <div className="addBox-btn">
@@ -255,11 +252,13 @@ function App() {
               >
                 <div className="todoList-editBox">
                   <div className="todoList-editBox_text">
+                    <p className="todoList-editBox_text_title">タスク：</p>
                     <input
                       type="text"
                       value={editText}
                       onChange={(e) => setEditText(e.target.value)}
                     />
+                    <p className="todoList-editBox_text_title">期限：</p>
                     <input
                       type="date"
                       value={editDeadline}
@@ -278,15 +277,18 @@ function App() {
             </li>
             ))}
           </ul>
+
           <div className="todoList-footer">
-            <button type="button" className="btn btn--trashText "
-              onClick={() => {
-                if(window.confirm('全てのタスクを削除します')){
-                  setTodos([])
-                  localStorage.setItem('todos', JSON.stringify([]))
-                }
-              }}
-            >全削除</button>
+            {todos.length !== 0 && (
+              <button type="button" className="btn btn--trashText "
+                onClick={() => {
+                  if(window.confirm('全てのタスクを削除します')){
+                    setTodos([])
+                    localStorage.setItem('todos', JSON.stringify([]))
+                  }
+                }}
+              >全削除</button>
+            )}
           </div>
         </div>
         <div className="todoList">
@@ -322,14 +324,16 @@ function App() {
             ))}
           </ul>
           <div className="todoList-footer">
-            <button type="button" className="btn btn--trashText "
-              onClick={() => {
-                if(window.confirm('全てのタスクを削除します')){
-                  setCompletedTodos([])
-                  localStorage.setItem('completedTodos', JSON.stringify([]))
-                }
-              }}
-            >全削除</button>
+            {completedTodos.length !== 0 && (
+              <button type="button" className="btn btn--trashText "
+                onClick={() => {
+                  if(window.confirm('全てのタスクを削除します')){
+                    setCompletedTodos([])
+                    localStorage.setItem('completedTodos', JSON.stringify([]))
+                  }
+                }}
+              >全削除</button>
+            )}
           </div>
         </div>
         {/* 機能一覧 */}
