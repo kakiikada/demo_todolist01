@@ -16,6 +16,7 @@ function App() {
   const [editText, setEditText] = useState('')
   const [editDeadline, setEditDeadline] = useState('')
   const [sortOrder, setSortOrder] = useState<'none' | 'deadline'>('none')
+  const [clock, setClock] = useState(new Date())
   
   // ボタンアニメーション
   // 進行中
@@ -94,7 +95,14 @@ function App() {
       // 取り出した配列をcompletedTodosにセット
       setCompletedTodos(parsedCompletedTodos)
     }
-    
+
+    // 時計
+    const timer = setInterval(() => {
+      setClock(new Date())
+    }, 1000)
+
+    return () => clearInterval(timer)
+        
   }, [])
   // 編集後に保存する関数
   const saveEdit = () => {
@@ -135,7 +143,12 @@ function App() {
   return (
     <main>
       <section className="content">
-        <h1 className="title">ToDo List</h1>
+        <div className="header">
+          <h1 className="header-title">ToDo List</h1>
+          <div className="header-clock">
+            {clock.toLocaleTimeString('ja-JP')}
+          </div>
+        </div>
         <form
           onSubmit={(e) => {
             e.preventDefault()
@@ -164,7 +177,7 @@ function App() {
                 />
               </li>
               <li className="addBox-textBox_input">
-                <p className="addBox-textBox_input_title">期限:</p>
+                <p className="addBox-textBox_input_title">：</p>
                 <input
                   type="date"
                   value={editDeadline}
@@ -346,6 +359,7 @@ function App() {
             <li>タスク数の表示</li>
             <li>期限が当日であるタスク・期限が切れているタスクそれぞれの期限日の表示色を変更</li>
             <li>進行中タスクのソート</li>
+            <li>時計の表示</li>
           </ul>
         </div>
       </section>
